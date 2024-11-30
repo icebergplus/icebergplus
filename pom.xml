@@ -13,6 +13,11 @@
   <inceptionYear>2024</inceptionYear>
   <url>https://github.com/icebergplus/icebergplus</url>
 
+  <organization>
+    <name>icebergplus</name>
+    <url>https://github.com/icebergplus/icebergplus</url>
+  </organization>
+
   <scm>
     <connection>scm:git:https://github.com/icebergplus/icebergplus.git</connection>
     <developerConnection>scm:git:https://github.com/icebergplus/icebergplus.git</developerConnection>
