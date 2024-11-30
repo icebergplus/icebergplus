@@ -10,6 +10,10 @@
   <name>icebergplus</name>
   <description>icebergplus</description>
 
+  <scm>
+    <developerConnection>scm:git:https://github.com/icebergplus/icebergplus.git</developerConnection>
+  </scm>
+
   <licenses>
     <license>
       <name>Apache License 2.0</name>
@@ -166,6 +170,17 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <useReleaseProfile>false</useReleaseProfile>
+          <releaseProfiles>release</releaseProfiles>
+          <goals>deploy</goals>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.openrewrite.maven</groupId>
         <artifactId>rewrite-maven-plugin</artifactId>
