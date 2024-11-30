@@ -29,10 +29,10 @@ import software.amazon.awssdk.services.s3.S3Client;
 import static org.apache.iceberg.types.Types.NestedField.required;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LocalIcebergCatalogTest {
+class LocalIcebergCatalogTest {
 
   @Test
-  public void happyPath() throws Exception {
+  void happyPath() throws Exception {
 
     LocalIcebergCatalog localCatalog = new LocalIcebergCatalog();
     assertThat(localCatalog.getLocalDirectory()).exists().isDirectory();
