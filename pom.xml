@@ -14,7 +14,9 @@
   <url>https://github.com/icebergplus/icebergplus</url>
 
   <scm>
+    <connection>scm:git:https://github.com/icebergplus/icebergplus.git</connection>
     <developerConnection>scm:git:https://github.com/icebergplus/icebergplus.git</developerConnection>
+    <url>https://github.com/icebergplus/icebergplus.git</url>
   </scm>
 
   <developers>
