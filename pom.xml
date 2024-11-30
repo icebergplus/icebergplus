@@ -14,6 +14,13 @@
     <developerConnection>scm:git:https://github.com/icebergplus/icebergplus.git</developerConnection>
   </scm>
 
+  <developers>
+    <developer>
+      <id>sullis</id>
+      <name>Sean C. Sullivan</name>
+    </developer>
+  </developers>
+
   <licenses>
     <license>
       <name>Apache License 2.0</name>
