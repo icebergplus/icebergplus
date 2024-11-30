@@ -38,7 +38,7 @@ class LocalIcebergCatalogTest {
 
   private static final List<Map<String, Object>> RECORD_DATA = List.of(
       makeData("Hello world", 22, true,  OffsetDateTime.of(2005, 12, 1, 0, 0, 0, 0, ZONE_OFFSET)),
-      makeData("Hello moon", 33, false,  OffsetDateTime.of(2005, 12, 1, 0, 0, 0, 0, ZONE_OFFSET))
+      makeData("Hello moon", 33, false,  OffsetDateTime.of(2005, 12, 24, 0, 0, 0, 0, ZONE_OFFSET))
   );
 
   private static Map<String, Object> makeData(String text, int count, boolean b, OffsetDateTime time) {
