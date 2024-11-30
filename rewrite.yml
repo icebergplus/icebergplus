@@ -1,6 +1,6 @@
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: InternalBestPractices
+name: icebergplus.InternalBestPractices
 displayName: internal recipe
 description: internal recipe
 recipeList:
