@@ -5,7 +5,7 @@
   <groupId>io.github.icebergplus</groupId>
   <artifactId>icebergplus-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>${icebergplus.version}</version>
 
   <name>icebergplus</name>
   <description>icebergplus</description>
@@ -40,6 +40,11 @@
 
   <properties>
     <java.version>17</java.version>
+    <icebergplus.version>0.0.1-SNAPSHOT</icebergplus.version>
+    <git.url>https://github.com/icebergplus/icebergplus</git.url>
+    <git.connection>scm:git:https://github.com/icebergplus/icebergplus</git.connection>
+    <git.developerConnection>scm:git:ssh://git@github.com/icebergplus/icebergplus.git</git.developerConnection>
+    <main.basedir>${basedir}</main.basedir>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
@@ -185,6 +190,7 @@
   </dependencies>
 
   <modules>
+    <module>icebergplus-bom</module>
     <module>local-iceberg-catalog</module>
   </modules>
 
