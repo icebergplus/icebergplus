@@ -210,7 +210,7 @@
 
   <modules>
     <module>icebergplus-bom</module>
-    <module>local-iceberg-catalog</module>
+    <module>icebergplus-local-catalog</module>
   </modules>
 
   <build>
