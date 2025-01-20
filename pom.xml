@@ -134,6 +134,11 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-core</artifactId>
+        <version>1.14.3</version>
+      </dependency>
+      <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>3.27.3</version>
@@ -211,6 +216,7 @@
   <modules>
     <module>icebergplus-bom</module>
     <module>icebergplus-local-catalog</module>
+    <module>icebergplus-micrometer-metrics-reporter</module>
   </modules>
 
   <build>
