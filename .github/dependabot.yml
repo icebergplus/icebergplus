@@ -4,7 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-      time: "04:02"
+      time: "04:07"
     open-pull-requests-limit: 20
   - package-ecosystem: "github-actions"
     directory: "/"
