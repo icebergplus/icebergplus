@@ -6,10 +6,11 @@
     <artifactId>icebergplus-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
+
   <artifactId>icebergplus-local-catalog</artifactId>
+  <name>icebergplus-local-catalog</name>
+  <description>icebergplus-local-catalog</description>
   <packaging>jar</packaging>
-  <name>local-iceberg-catalog</name>
-  <description>local-iceberg-catalog</description>
 
   <dependencies>
     <dependency>
