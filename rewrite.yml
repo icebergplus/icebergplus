@@ -1,8 +1,8 @@
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: icebergplus.InternalBestPractices
-displayName: internal recipe
-description: internal recipe
+displayName: icebergplus internal recipe
+description: icebergplus internal recipe
 recipeList:
   - org.openrewrite.java.logging.slf4j.Slf4jBestPractices
   - org.openrewrite.java.testing.junit5.JUnit5BestPractices
