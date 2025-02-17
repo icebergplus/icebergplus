@@ -12,6 +12,10 @@
   <description>icebergplus-local-catalog</description>
   <packaging>jar</packaging>
 
+  <properties>
+    <hadoop.version>3.4.1</hadoop.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.assertj</groupId>
@@ -95,7 +99,12 @@
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-common</artifactId>
-      <version>3.4.1</version>
+      <version>${hadoop.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-mapreduce-client-core</artifactId>
+      <version>${hadoop.version}</version>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
