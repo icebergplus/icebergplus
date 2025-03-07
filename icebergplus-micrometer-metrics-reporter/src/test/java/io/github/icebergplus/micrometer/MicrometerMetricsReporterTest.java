@@ -1,7 +1,10 @@
 package io.github.icebergplus.micrometer;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.iceberg.expressions.Expressions;
 import org.apache.iceberg.metrics.ImmutableCommitMetricsResult;
@@ -19,8 +22,9 @@ class MicrometerMetricsReporterTest {
   @Test
   void scanReport_happyPath() {
     var scanResult = ImmutableScanMetricsResult.builder()
-        .totalFileSizeInBytes(ImmutableCounterResult.builder().unit(MetricsContext.Unit.BYTES).value(5678).build())
         .resultDataFiles(ImmutableCounterResult.builder().unit(MetricsContext.Unit.COUNT).value(222).build())
+        .resultDeleteFiles(ImmutableCounterResult.builder().unit(MetricsContext.Unit.COUNT).value(333).build())
+        .totalFileSizeInBytes(ImmutableCounterResult.builder().unit(MetricsContext.Unit.BYTES).value(5678).build())
         .build();
     var report = ImmutableScanReport.builder()
         .tableName("fooTable")
@@ -37,7 +41,9 @@ class MicrometerMetricsReporterTest {
     }
 
     assertThat(meterNames(registry))
-        .containsExactlyInAnyOrder("iceberg.scanReport.totalFileSizeInBytes", "iceberg.scanReport.resultDataFiles");
+        .containsExactlyInAnyOrder("iceberg.scanReport.totalFileSizeInBytes",
+            "iceberg.scanReport.resultDataFiles",
+            "iceberg.scanReport.resultDeleteFiles");
   }
 
   @Test
@@ -50,6 +56,10 @@ class MicrometerMetricsReporterTest {
         .addedDeleteFiles(ImmutableCounterResult.builder()
             .unit(MetricsContext.Unit.COUNT)
             .value(20)
+            .build())
+        .addedRecords(ImmutableCounterResult.builder()
+            .unit(MetricsContext.Unit.COUNT)
+            .value(30)
             .build())
         .build();
     var report = ImmutableCommitReport.builder()
@@ -66,16 +76,28 @@ class MicrometerMetricsReporterTest {
 
     assertThat(meterNames(registry))
         .containsExactlyInAnyOrder(
+            "iceberg.commitReport.addedDataFiles",
             "iceberg.commitReport.addedDeleteFiles",
-            "iceberg.commitReport.addedDataFiles");
+            "iceberg.commitReport.addedRecords"
+            );
 
-    assertThat(registry.get("iceberg.commitReport.addedDataFiles").counter().count())
-        .isEqualTo(10);
-    assertThat(registry.get("iceberg.commitReport.addedDeleteFiles").counter().count())
-        .isEqualTo(20);
+    var counterMap = Map.of(
+        "iceberg.commitReport.addedDataFiles", 10,
+        "iceberg.commitReport.addedDeleteFiles", 20,
+        "iceberg.commitReport.addedRecords", 30
+    );
+
+    for (var entry : counterMap.entrySet()) {
+      var counter = registry.get(entry.getKey()).counter();
+      int actualCount = (int) counter.count();
+      assertThat(actualCount).isEqualTo(entry.getValue());
+      assertThat(counter.getId().getTags()).containsExactly(
+          Tag.of("tableName", "tableFoobar")
+      );
+    }
   }
 
-  private Stream<String> meterNames(MeterRegistry registry) {
+  static private Stream<String> meterNames(MeterRegistry registry) {
     return registry.getMeters().stream()
         .map(m -> m.getId().getName());
   }

@@ -1,8 +1,10 @@
 package io.github.icebergplus.micrometer;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.iceberg.metrics.CommitReport;
 import org.apache.iceberg.metrics.CounterResult;
@@ -13,13 +15,19 @@ import org.apache.iceberg.metrics.TimerResult;
 
 public class MicrometerMetricsReporter implements MetricsReporter {
   private MeterRegistry meterRegistry;
+  private String metricPrefix;
 
   public MicrometerMetricsReporter() {
     // todo
   }
 
   public MicrometerMetricsReporter(MeterRegistry registry) {
+    this("iceberg.", registry);
+  }
+
+  public MicrometerMetricsReporter(String metricPrefix, MeterRegistry registry) {
     this.meterRegistry = registry;
+    this.metricPrefix = metricPrefix;
   }
 
   @Override
@@ -28,21 +36,24 @@ public class MicrometerMetricsReporter implements MetricsReporter {
       return;
     }
 
+
     if (report instanceof CommitReport commitReport) {
-      final String prefix = "iceberg.commitReport.";
+      final String prefix = metricPrefix + "commitReport.";
+      List<Tag> tags = List.of(Tag.of("tableName", commitReport.tableName()));
       var counters = extractCounters(commitReport.commitMetrics());
       for (var counter : counters.entrySet()) {
-        report(prefix + counter.getKey(), counter.getValue());
+        report(prefix + counter.getKey(), counter.getValue(), tags);
       }
       var timers = extractTimers(commitReport.commitMetrics());
       for (var timer: timers.entrySet()) {
         report(prefix + timer.getKey(), timer.getValue());
       }
     } else if (report instanceof ScanReport scanReport) {
-      final String prefix = "iceberg.scanReport.";
+      final String prefix = metricPrefix + "scanReport.";
       var counters = extractCounters(scanReport.scanMetrics());
+      List<Tag> tags = List.of(Tag.of("tableName", scanReport.tableName()));
       for (var counter : counters.entrySet()) {
-        report(prefix + counter.getKey(), counter.getValue());
+        report(prefix + counter.getKey(), counter.getValue(), tags);
       }
       var timers = extractTimers(scanReport.scanMetrics());
       for (var timer: timers.entrySet()) {
@@ -53,11 +64,11 @@ public class MicrometerMetricsReporter implements MetricsReporter {
     }
   }
 
-  private void report(String name, CounterResult counterResult) {
+  private void report(String name, CounterResult counterResult, List<Tag> tags) {
     if (counterResult == null) {
       return;
     }
-    var counter = meterRegistry.counter(name);
+    var counter = meterRegistry.counter(name, tags);
     counter.increment(counterResult.value());
   }
 
