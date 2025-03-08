@@ -200,6 +200,7 @@
     <module>icebergplus-bom</module>
     <module>icebergplus-local-catalog</module>
     <module>icebergplus-micrometer-metrics-reporter</module>
+    <module>icebergplus-integration-test</module>
   </modules>
 
   <build>
