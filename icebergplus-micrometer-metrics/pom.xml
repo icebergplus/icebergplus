@@ -6,9 +6,9 @@
     <artifactId>icebergplus-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>icebergplus-micrometer-metrics-reporter</artifactId>
-  <name>icebergplus-micrometer-metrics-reporter</name>
-  <description>iceberg micrometer metrics reporter</description>
+  <artifactId>icebergplus-micrometer-metrics</artifactId>
+  <name>icebergplus-micrometer-metrics</name>
+  <description>iceberg micrometer metrics</description>
   <packaging>jar</packaging>
 
   <dependencies>

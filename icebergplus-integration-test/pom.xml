@@ -19,7 +19,7 @@
   <dependencies>
     <dependency>
       <groupId>io.github.icebergplus</groupId>
-      <artifactId>icebergplus-micrometer-metrics-reporter</artifactId>
+      <artifactId>icebergplus-micrometer-metrics</artifactId>
       <version>0.0.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
