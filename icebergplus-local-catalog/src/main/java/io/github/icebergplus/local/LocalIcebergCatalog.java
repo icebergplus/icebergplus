@@ -2,6 +2,7 @@ package io.github.icebergplus.local;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import org.apache.iceberg.aws.AwsClientProperties;
 import org.apache.iceberg.aws.s3.S3FileIO;
 import org.apache.iceberg.aws.s3.S3FileIOProperties;
 import org.apache.iceberg.jdbc.JdbcCatalog;
+import org.apache.iceberg.metrics.MetricsReporter;
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.MinIOContainer;
 import org.apache.iceberg.catalog.Catalog;
@@ -24,8 +27,10 @@ import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
 public class LocalIcebergCatalog {
   private static final Region AWS_REGION = Region.US_EAST_1;
+  private static final Field METRICS_REPORTER_FIELD = findField(JdbcCatalog.class, "metricsReporter");
   private final String s3BucketName = "test-bucket";
   private final String warehouseLocation = "s3://" + s3BucketName + "/iceberg";
+  private @Nullable MetricsReporter metricsReporter;
   private File localDir;
   private File minioDataDir;
   private File h2Dir;
@@ -41,18 +46,18 @@ public class LocalIcebergCatalog {
   }
 
   public LocalIcebergCatalog() {
-      this(createTempDirectory(), new HashMap<>());
+      this(createTempDirectory(), new HashMap<>(), null);
   }
 
   public LocalIcebergCatalog(final Map<String, String> extraCatalogProps) {
-    this(createTempDirectory(), extraCatalogProps);
+    this(createTempDirectory(), extraCatalogProps, null);
   }
 
   public LocalIcebergCatalog(final File localDir) {
-    this(localDir, new HashMap<>());
+    this(localDir, new HashMap<>(), null);
   }
 
-  public LocalIcebergCatalog(final File localDir, final Map<String, String> extraCatalogProps) {
+  public LocalIcebergCatalog(final File localDir, final Map<String, String> extraCatalogProps, @Nullable MetricsReporter reporter) {
     this.localDir = localDir;
     this.localDir.mkdirs();
     this.minioDataDir = new File(this.localDir, "minio-data");
@@ -60,6 +65,7 @@ public class LocalIcebergCatalog {
     this.h2Dir = new File(this.localDir, "h2db-data");
     this.h2Dir.mkdirs();
     this.extraCatalogProperties = extraCatalogProps;
+    this.metricsReporter = reporter;
   }
 
   private static File createTempDirectory() {
@@ -128,9 +134,42 @@ public class LocalIcebergCatalog {
     jdbc.initialize("jdbccatalog", props);
     this.catalog = jdbc;
 
+    setMetricsReporterField(this.catalog, this.metricsReporter);
+
     if (!this.status.compareAndSet(Status.STARTING, Status.STARTED)) {
       throw new IllegalStateException("unable to complete start()");
     }
+  }
+
+  public void setMetricsReporter(MetricsReporter reporter) {
+    this.metricsReporter = reporter;
+    if (this.catalog != null) {
+      setMetricsReporterField(this.catalog, this.metricsReporter);
+    }
+  }
+
+  static private void setMetricsReporterField(Catalog c, MetricsReporter mr) {
+      try {
+        METRICS_REPORTER_FIELD.set(c, mr);
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+  }
+
+  private static Field findField(Class clazz, String fieldName) {
+      Field f = null;
+      do {
+        try {
+          f = clazz.getDeclaredField(fieldName);
+          f.setAccessible(true);
+          return f;
+        } catch (NoSuchFieldException ex) {
+          f = null;
+          clazz = clazz.getSuperclass();
+          System.out.println("clazz " + clazz);
+        }
+      } while (clazz != null);
+      return f;
   }
 
   public void stop() {

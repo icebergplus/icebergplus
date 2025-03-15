@@ -18,7 +18,7 @@ public class MicrometerMetricsReporter implements MetricsReporter {
   private String metricPrefix;
 
   public MicrometerMetricsReporter() {
-    // todo
+    System.out.println("no-arg constructor called");
   }
 
   public MicrometerMetricsReporter(MeterRegistry registry) {
@@ -30,12 +30,23 @@ public class MicrometerMetricsReporter implements MetricsReporter {
     this.metricPrefix = metricPrefix;
   }
 
+  public void setMeterRegistry(MeterRegistry registry) {
+    this.meterRegistry = registry;
+  }
+
+  public void setMetricPrefix(String prefix) {
+    this.metricPrefix = prefix;
+  }
+
   @Override
-  public void report(MetricsReport report) {
+  public void report(final MetricsReport report) {
     if (report == null) {
       return;
     }
 
+    if (this.meterRegistry == null) {
+      return;
+    }
 
     if (report instanceof CommitReport commitReport) {
       final String prefix = metricPrefix + "commitReport.";

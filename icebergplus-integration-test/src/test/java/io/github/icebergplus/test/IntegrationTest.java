@@ -1,11 +1,14 @@
 package io.github.icebergplus.test;
 
 import io.github.icebergplus.local.LocalIcebergCatalog;
+import io.github.icebergplus.micrometer.MicrometerMetricsReporter;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.apache.iceberg.AppendFiles;
 import org.apache.iceberg.DataFiles;
 import org.apache.iceberg.MetricsConfig;
@@ -21,7 +24,6 @@ import org.apache.iceberg.data.parquet.GenericParquetWriter;
 import org.apache.iceberg.io.DataWriter;
 import org.apache.iceberg.io.InputFile;
 import org.apache.iceberg.io.OutputFile;
-import org.apache.iceberg.metrics.InMemoryMetricsReporter;
 import org.apache.iceberg.parquet.Parquet;
 import org.apache.iceberg.types.Types;
 import org.junit.jupiter.api.Test;
@@ -44,8 +46,11 @@ class IntegrationTest {
 
   @Test
   void happyPath() throws Exception {
-    var props = Map.of("metrics-reporter-impl", InMemoryMetricsReporter.class.getName());
-    LocalIcebergCatalog localCatalog = new LocalIcebergCatalog(props);
+    SimpleMeterRegistry registry = new SimpleMeterRegistry();
+    var reporter = new MicrometerMetricsReporter(registry);
+
+    LocalIcebergCatalog localCatalog = new LocalIcebergCatalog();
+    localCatalog.setMetricsReporter(reporter);
     localCatalog.start();
 
     final Namespace namespace = Namespace.of("mynamespace");
@@ -95,6 +100,23 @@ class IntegrationTest {
       }
 
       localCatalog.stop();
+
+      var meterNames = registry.getMeters().stream()
+          .map(m -> m.getId().getName())
+          .collect(Collectors.toUnmodifiableSet());
+
+      assertThat(meterNames)
+          .containsExactlyInAnyOrder("iceberg.commitReport.attempts",
+              "iceberg.commitReport.addedDataFiles",
+              "iceberg.commitReport.totalPositionalDeletes",
+              "iceberg.commitReport.totalDataFiles",
+              "iceberg.commitReport.addedRecords",
+              "iceberg.commitReport.totalDeleteFiles",
+              "iceberg.commitReport.totalFilesSizeInBytes",
+              "iceberg.commitReport.totalRecords",
+              "iceberg.commitReport.totalEqualityDeletes",
+              "iceberg.commitReport.addedFilesSizeInBytes",
+              "iceberg.commitReport.totalDuration");
     }
   }
 }
