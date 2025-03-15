@@ -18,7 +18,7 @@ public class MicrometerMetricsReporter implements MetricsReporter {
   private String metricPrefix;
 
   public MicrometerMetricsReporter() {
-    System.out.println("no-arg constructor called");
+    // no-op
   }
 
   public MicrometerMetricsReporter(MeterRegistry registry) {
