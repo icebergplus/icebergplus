@@ -166,7 +166,6 @@ public class LocalIcebergCatalog {
         } catch (NoSuchFieldException ex) {
           f = null;
           clazz = clazz.getSuperclass();
-          System.out.println("clazz " + clazz);
         }
       } while (clazz != null);
       return f;
