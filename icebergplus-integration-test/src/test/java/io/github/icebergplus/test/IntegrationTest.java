@@ -99,8 +99,6 @@ class IntegrationTest {
         loaded.refresh();
       }
 
-      localCatalog.stop();
-
       var meterNames = registry.getMeters().stream()
           .map(m -> m.getId().getName())
           .collect(Collectors.toUnmodifiableSet());
@@ -117,6 +115,24 @@ class IntegrationTest {
               "iceberg.commitReport.totalEqualityDeletes",
               "iceberg.commitReport.addedFilesSizeInBytes",
               "iceberg.commitReport.totalDuration");
+
+      loaded.refresh();
+
+      var scanTasks = loaded.newScan().planFiles();
+      assertThat(scanTasks).isNotNull();
+
+      var scanReportMeterNames = registry.getMeters().stream()
+          .map(m -> m.getId().getName())
+          .filter(name -> name.toLowerCase().contains("scanreport"))
+          .collect(Collectors.toUnmodifiableSet());
+
+      /* todo
+      assertThat(scanReportMeterNames).containsExactly(
+          "foobar");
+
+       */
+
+      localCatalog.stop();
     }
   }
 }
