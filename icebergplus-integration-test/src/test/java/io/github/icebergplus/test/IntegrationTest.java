@@ -80,7 +80,7 @@ class IntegrationTest {
             loaded.io().newOutputFile(loaded.location() + "/foobar/" + UUID.randomUUID() + ".parquet");
 
         DataWriter<Record> dataWriter =
-            Parquet.writeData(outputFile).schema(schema).createWriterFunc(GenericParquetWriter::buildWriter).overwrite()
+            Parquet.writeData(outputFile).schema(schema).createWriterFunc(GenericParquetWriter::create).overwrite()
                 .metricsConfig(MetricsConfig.forTable(loaded)).withSpec(spec).build();
 
         GenericRecord record = GenericRecord.create(schema);
